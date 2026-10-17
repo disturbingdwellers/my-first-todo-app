@@ -5,6 +5,16 @@
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
+const taskCounter = document.getElementById("taskCounter");
+
+// ===============================
+// Actualizar contador
+// ===============================
+
+function updateCounter() {
+    const totalTasks = taskList.children.length;
+    taskCounter.textContent = `Tareas pendientes: ${totalTasks}`;
+}
 
 // ===============================
 // Guardar tareas en LocalStorage
@@ -37,12 +47,14 @@ function createTaskElement(taskText) {
     deleteBtn.addEventListener("click", () => {
         li.remove();
         saveTasks();
+        updateCounter(); // Actualizar contador al borrar
     });
 
     li.appendChild(span);
     li.appendChild(deleteBtn);
 
     taskList.appendChild(li);
+    updateCounter(); // Actualizar contador al crear elemento
 }
 
 // ===============================
@@ -57,7 +69,6 @@ function addTask() {
     }
 
     createTaskElement(taskText);
-
     saveTasks();
 
     taskInput.value = "";
@@ -69,12 +80,13 @@ function addTask() {
 // ===============================
 
 function loadTasks() {
-    const savedTasks =
-        JSON.parse(localStorage.getItem("tasks")) || [];
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
     savedTasks.forEach((task) => {
         createTaskElement(task);
     });
+    
+    updateCounter(); // Actualizar al cargar desde localStorage
 }
 
 // ===============================
