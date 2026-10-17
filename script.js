@@ -1,18 +1,30 @@
-// Obtener elementos del DOM
+// ===============================
+// Seleccionar elementos del DOM
+// ===============================
+
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
 
-// Función para añadir una tarea
-function addTask() {
-    const taskText = taskInput.value.trim();
+// ===============================
+// Guardar tareas en LocalStorage
+// ===============================
 
-    // Evitar tareas vacías
-    if (taskText === "") {
-        return;
-    }
+function saveTasks() {
+    const tasks = [];
 
-    // Crear elementos
+    document.querySelectorAll("#taskList li span").forEach((task) => {
+        tasks.push(task.textContent);
+    });
+
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+// ===============================
+// Crear tarea
+// ===============================
+
+function createTaskElement(taskText) {
     const li = document.createElement("li");
 
     const span = document.createElement("span");
@@ -22,29 +34,59 @@ function addTask() {
     deleteBtn.textContent = "✕";
     deleteBtn.classList.add("delete-btn");
 
-    // Eliminar tarea
-    deleteBtn.addEventListener("click", function () {
+    deleteBtn.addEventListener("click", () => {
         li.remove();
+        saveTasks();
     });
 
-    // Añadir elementos al li
     li.appendChild(span);
     li.appendChild(deleteBtn);
 
-    // Añadir tarea a la lista
     taskList.appendChild(li);
+}
 
-    // Limpiar input
+// ===============================
+// Añadir tarea
+// ===============================
+
+function addTask() {
+    const taskText = taskInput.value.trim();
+
+    if (taskText === "") {
+        return;
+    }
+
+    createTaskElement(taskText);
+
+    saveTasks();
+
     taskInput.value = "";
     taskInput.focus();
 }
 
-// Evento botón
+// ===============================
+// Cargar tareas guardadas
+// ===============================
+
+function loadTasks() {
+    const savedTasks =
+        JSON.parse(localStorage.getItem("tasks")) || [];
+
+    savedTasks.forEach((task) => {
+        createTaskElement(task);
+    });
+}
+
+// ===============================
+// Eventos
+// ===============================
+
 addTaskBtn.addEventListener("click", addTask);
 
-// Evento Enter
-taskInput.addEventListener("keydown", function (event) {
+taskInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
         addTask();
     }
 });
+
+document.addEventListener("DOMContentLoaded", loadTasks);
